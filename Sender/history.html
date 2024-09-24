@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="menu">
+        <ul>
+            <li><a href="index.html">Principal</a></li>
+            <li><a href="send.html">Enviar Mensagens</a></li>
+            <li><a href="history.html">Histórico</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <h1>Histórico de Mensagens Enviadas</h1>
+        <table id="historyTable">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Número de Telefone</th>
+                    <th>Mensagem</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Histórico será inserido aqui -->
+            </tbody>
+        </table>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('http://localhost:3000/message-history')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('historyTable').querySelector('tbody');
+                    data.messages.forEach(message => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${new Date(message.date).toLocaleString()}</td>
+                            <td>${message.phone}</td>
+                            <td>${message.message}</td>
+                            <td><button2 onclick="deleteMessage(${message.id})">x</button2></td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        });
+
+        function deleteMessage(id) {
+            fetch(`http://localhost:3000/delete-message/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                location.reload(); // Recarregar a página para atualizar a tabela
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
